@@ -1,0 +1,41 @@
+version: "3.9"
+services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root123   # <-- replace
+      MYSQL_DATABASE: orders
+      MYSQL_USER: app
+      MYSQL_PASSWORD: app123         # <-- replace
+    volumes:
+      - db_data:/var/lib/mysql
+
+  activemq:
+    image: rmohr/activemq:latest
+    ports: ["8161:8161","61616:61616"]
+
+  backend:
+    build: ./backend
+    environment:
+      DB_HOST: db
+      DB_USER: app
+      DB_PASS: app_pass
+      DB_NAME: orders
+      MQ_URL: tcp://activemq:61616
+    ports: ["8080:8080"]
+
+  worker:
+    build: ./worker
+    environment:
+      DB_HOST: db
+      DB_USER: app
+      DB_PASS: app_pass
+      DB_NAME: orders
+      MQ_URL: tcp://activemq:61616
+
+  frontend:
+    build: ./frontend
+    ports: ["80:80"]
+
+volumes:
+  db_data:
