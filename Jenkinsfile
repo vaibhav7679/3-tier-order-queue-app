@@ -20,7 +20,7 @@ pipeline {
     }
     stage('Deploy Locally') {
       steps {
-        sh 'docker-compose up -d'
+        sh 'docker compose up -d'
       }
     }
   }
